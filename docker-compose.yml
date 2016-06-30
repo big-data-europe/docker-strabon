@@ -3,6 +3,8 @@ services:
   postgis:
     image: bde2020/postgis
     hostname: postgis
+    volumes:
+      - <host_machine_dir>:/var/lib/postgresql/9.4/main
     ports:
       - "5432:5432"
   strabon:
