@@ -24,7 +24,8 @@ RUN hg clone 'http://hg.strabon.di.uoa.gr/Strabon/' && \
     cd Strabon && \
     mvn clean package
 
-RUN mkdir /tomcat$TOMCAT_VERSION/webapps/strabon && \
+RUN mkdir /resources && \
+    mkdir /tomcat$TOMCAT_VERSION/webapps/strabon && \
     unzip /Strabon/endpoint/target/strabon-endpoint-*.war \
 		-d /tomcat$TOMCAT_VERSION/webapps/strabon && \
     rm -Rf /Strabon
