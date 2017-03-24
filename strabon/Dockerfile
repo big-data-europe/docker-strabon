@@ -9,7 +9,7 @@ RUN apt-get update && \
     		default-jdk \
     		maven \
     		mercurial \
-		curl \
+			curl \
     		wget  && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -33,14 +33,14 @@ RUN mkdir /resources && \
 
 RUN sed -i 's/localhost/postgis/' /tomcat$TOMCAT_VERSION/webapps/strabon/WEB-INF/connection.properties
 
-RUN hg clone 'http://hg.strabon.di.uoa.gr/Strabon/' \
-    && sed -i 's/localhost/postgis/' Strabon/endpoint/WebContent/WEB-INF/connection.properties \
-    && sed -i 's/endpoint/event-changes/g' Strabon/endpoint/WebContent/WEB-INF/connection.properties \
-    && cd Strabon \
-    && mvn clean package
-
-RUN mv /Strabon/endpoint/target/strabon*.war /Strabon/endpoint/target/event-changes.war \
-    && cp /Strabon/endpoint/target/event-changes.war /tomcat/webapps
+#RUN hg clone 'http://hg.strabon.di.uoa.gr/Strabon/' \
+#    && sed -i 's/localhost/postgis/' Strabon/endpoint/WebContent/WEB-INF/connection.properties \
+#    && sed -i 's/endpoint/event-changes/g' Strabon/endpoint/WebContent/WEB-INF/connection.properties \
+#    && cd Strabon \
+#    && mvn clean package
+#
+#RUN mv /Strabon/endpoint/target/strabon*.war /Strabon/endpoint/target/event-changes.war \
+#    && cp /Strabon/endpoint/target/event-changes.war /tomcat/webapps
 
 ADD create_tomcat_admin_user.sh /create_tomcat_admin_user.sh
 ADD strabon.sh /strabon.sh
