@@ -42,9 +42,8 @@ RUN sed -i 's/localhost/postgis/' /tomcat$TOMCAT_VERSION/webapps/strabon/WEB-INF
 #RUN mv /Strabon/endpoint/target/strabon*.war /Strabon/endpoint/target/event-changes.war \
 #    && cp /Strabon/endpoint/target/event-changes.war /tomcat/webapps
 
-ADD create_tomcat_admin_user.sh /create_tomcat_admin_user.sh
 ADD strabon.sh /strabon.sh
-RUN chmod +x /*.sh
+RUN chmod +x /strabon.sh
 
 EXPOSE 8080
 CMD ["/bin/bash", "/strabon.sh"]
