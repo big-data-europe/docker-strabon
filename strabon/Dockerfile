@@ -1,49 +1,29 @@
-FROM ubuntu:14.04
-MAINTAINER George Papadakis <gpapadis@di.uoa.gr>
+#######################################
+# Dockerfile for Strabon              #
+# BigDataEurope                       #
+#                                     #
+# based on bde2020/sc7pilotbase:1.0.0 #
+# java 1.8.0_151                      #
+# maven 3.0.5                         #
+# git 1.9.1                           #
+# tomcat 8.0.23                       #
+#######################################
 
-ENV TOMCAT_MAJOR_VERSION 7
-ENV TOMCAT_MINOR_VERSION 7.0.55
+FROM bde2020/sc7pilotbase:1.0.0
 
-RUN apt-get update && \
-    apt-get install -y \
-    		default-jdk \
-    		maven \
-    		mercurial \
-			curl \
-    		wget  && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+MAINTAINER Giorgos Argyriou <gioargyr@gmail.com>
 
-# INSTALL TOMCAT
-RUN wget -q https://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_MAJOR_VERSION}/v${TOMCAT_MINOR_VERSION}/bin/apache-tomcat-${TOMCAT_MINOR_VERSION}.tar.gz && \
-    wget -qO- https://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_MAJOR_VERSION}/v${TOMCAT_MINOR_VERSION}/bin/apache-tomcat-${TOMCAT_MINOR_VERSION}.tar.gz.md5 | md5sum -c - && \
-    tar zxf apache-tomcat-*.tar.gz && \
-    rm apache-tomcat-*.tar.gz && \
-    mv apache-tomcat* tomcat
+RUN apt-get update \
+ && apt-get install -y mercurial \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
-RUN hg clone 'http://hg.strabon.di.uoa.gr/Strabon/' && \
-    cd Strabon && \
-    mvn clean package
+RUN hg clone 'http://hg.strabon.di.uoa.gr/Strabon/' \
+ && sed -i 's/localhost/postgis/' /Strabon/endpoint/WebContent/WEB-INF/connection.properties \
+ && cd Strabon \
+ && mvn clean package
 
-RUN mkdir /resources && \
-    mkdir /tomcat$TOMCAT_VERSION/webapps/strabon && \
-    unzip /Strabon/endpoint/target/strabon-endpoint-*.war \
-		-d /tomcat$TOMCAT_VERSION/webapps/strabon && \
-    rm -Rf /Strabon
+RUN mkdir /resources \
+ && cp /Strabon/endpoint/target/strabon-endpoint-3.3.2-SNAPSHOT.war /tomcat/webapps/strabon.war
 
-RUN sed -i 's/localhost/postgis/' /tomcat$TOMCAT_VERSION/webapps/strabon/WEB-INF/connection.properties
-
-#RUN hg clone 'http://hg.strabon.di.uoa.gr/Strabon/' \
-#    && sed -i 's/localhost/postgis/' Strabon/endpoint/WebContent/WEB-INF/connection.properties \
-#    && sed -i 's/endpoint/event-changes/g' Strabon/endpoint/WebContent/WEB-INF/connection.properties \
-#    && cd Strabon \
-#    && mvn clean package
-#
-#RUN mv /Strabon/endpoint/target/strabon*.war /Strabon/endpoint/target/event-changes.war \
-#    && cp /Strabon/endpoint/target/event-changes.war /tomcat/webapps
-
-ADD strabon.sh /strabon.sh
-RUN chmod +x /strabon.sh
-
-EXPOSE 8080
-CMD ["/bin/bash", "/strabon.sh"]
+CMD ["/bin/bash", "/runtomcat.sh"]
