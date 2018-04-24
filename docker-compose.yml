@@ -10,8 +10,7 @@ services:
   strabon:
     image: bde2020/strabon
     hostname: strabon
+    environment:
+      - STRABON_CONNECTION_hostname=postgis
     ports:
       - "9999:8080"
-    links:
-      - "postgis:postgis"
-
