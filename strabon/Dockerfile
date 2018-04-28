@@ -9,8 +9,6 @@
 # tomcat 8.0.23                       #
 #######################################
 FROM bde2020/sc7pilotbase:1.0.0
-ARG STRABON_VERSION
-ARG STRABON_TAG="v$STRABON_VERSION"
 
 LABEL maintainer='Giorgos Argyriou <gioargyr@gmail.com>'
 LABEL authors='Giorgos Argyriou <gioargyr@gmail.com>, Aurelien Bourdon <aurelien.bourdon@gmail.com>'
@@ -23,12 +21,11 @@ RUN apt-get update \
 
 RUN hg clone 'http://hg.strabon.di.uoa.gr/Strabon/' \
  && cd Strabon \
- && hg up $STRABON_TAG \
- && mvn package
+ && mvn clean package
 
 ENV STRABON_HOME=/tomcat/webapps/strabon
 RUN mkdir /resources \
- && unzip -d $STRABON_HOME /Strabon/endpoint/target/strabon-endpoint-$STRABON_VERSION.war
+ && unzip -d $STRABON_HOME /Strabon/endpoint/target/strabon-endpoint-3.3.2-SNAPSHOT.war
 
 ADD entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
